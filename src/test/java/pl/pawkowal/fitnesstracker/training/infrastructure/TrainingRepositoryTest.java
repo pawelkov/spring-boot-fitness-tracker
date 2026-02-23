@@ -3,6 +3,7 @@ package pl.pawkowal.fitnesstracker.training.infrastructure;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import pl.pawkowal.fitnesstracker.training.domain.ActivityType;
 import pl.pawkowal.fitnesstracker.training.domain.Training;
 import pl.pawkowal.fitnesstracker.user.domain.User;
 import pl.pawkowal.fitnesstracker.user.infrastructure.UserRepository;
@@ -30,7 +31,7 @@ class TrainingRepositoryTest {
                 user,
                 LocalDateTime.of(2026, 2, 10, 8, 0),
                 LocalDateTime.of(2026, 2, 10, 9, 0),
-                "RUN",
+                ActivityType.RUNNING,
                 5.0,
                 10.0
         );
@@ -39,7 +40,7 @@ class TrainingRepositoryTest {
                 user,
                 LocalDateTime.of(2026, 2, 15, 8, 0),
                 LocalDateTime.of(2026, 2, 15, 9, 0),
-                "RUN",
+                ActivityType.RUNNING,
                 6.0,
                 12.0
         );
@@ -48,7 +49,7 @@ class TrainingRepositoryTest {
                 user,
                 LocalDateTime.of(2026, 3, 1, 8, 0),
                 LocalDateTime.of(2026, 3, 1, 9, 0),
-                "RUN",
+                ActivityType.RUNNING,
                 7.0,
                 14.0
         );
@@ -75,7 +76,7 @@ class TrainingRepositoryTest {
                 user,
                 LocalDateTime.of(2026, 2, 10, 8, 0),
                 LocalDateTime.of(2026, 2, 10, 9, 0),
-                "RUN",
+                ActivityType.RUNNING,
                 5.0,
                 10.0
         );
@@ -84,7 +85,7 @@ class TrainingRepositoryTest {
                 user,
                 LocalDateTime.of(2026, 2, 11, 8, 0),
                 LocalDateTime.of(2026, 2, 11, 9, 0),
-                "CYCLING",
+                ActivityType.CYCLING,
                 20.0,
                 20.0
         );
@@ -92,13 +93,13 @@ class TrainingRepositoryTest {
         trainingRepository.saveAll(List.of(run, cycling));
 
         // when
-        List<Training> result = trainingRepository.findByActivityType("CYCLING");
+        List<Training> result = trainingRepository.findByActivityType(ActivityType.CYCLING);
 
         // then
         assertThat(result)
                 .hasSize(1);
 
-        assertThat(result.get(0).getActivityType()).isEqualTo("CYCLING");
+        assertThat(result.get(0).getActivityType()).isEqualTo(ActivityType.CYCLING);
         assertThat(result.get(0).getUser().getId()).isEqualTo(user.getId());
     }
 }

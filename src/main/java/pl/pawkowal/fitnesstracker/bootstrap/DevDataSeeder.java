@@ -8,6 +8,7 @@ import pl.pawkowal.fitnesstracker.training.domain.Training;
 import pl.pawkowal.fitnesstracker.training.infrastructure.TrainingRepository;
 import pl.pawkowal.fitnesstracker.user.domain.User;
 import pl.pawkowal.fitnesstracker.user.infrastructure.UserRepository;
+import pl.pawkowal.fitnesstracker.training.domain.ActivityType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,10 +38,10 @@ public class DevDataSeeder implements CommandLineRunner {
         User u3 = userRepository.save(new User("Olivia", "Davis", "olivia.davis@dev.local", LocalDate.of(1975, 6, 25)));
 
         List<Training> trainings = List.of(
-                new Training(u1, LocalDateTime.of(2026, 2, 10, 8, 0),  LocalDateTime.of(2026, 2, 10, 9, 0),  "RUN",     10.5, 10.5),
-                new Training(u1, LocalDateTime.of(2026, 2, 12, 18, 0), LocalDateTime.of(2026, 2, 12, 19, 10), "CYCLING", 25.0, 21.4),
-                new Training(u2, LocalDateTime.of(2026, 2, 15, 7, 30), LocalDateTime.of(2026, 2, 15, 8, 10), "WALK",     4.2,  6.3),
-                new Training(u3, LocalDateTime.of(2026, 2, 20, 16, 0), LocalDateTime.of(2026, 2, 20, 17, 0), "RUN",      8.0,  8.0)
+                new Training(u1, LocalDateTime.of(2026, 2, 10, 8, 0),  LocalDateTime.of(2026, 2, 10, 9, 0),  ActivityType.RUNNING,     10.5, 10.5),
+                new Training(u1, LocalDateTime.of(2026, 2, 12, 18, 0), LocalDateTime.of(2026, 2, 12, 19, 10), ActivityType.CYCLING, 25.0, 21.4),
+                new Training(u2, LocalDateTime.of(2026, 2, 15, 7, 30), LocalDateTime.of(2026, 2, 15, 8, 10), ActivityType.WALKING,     4.2,  6.3),
+                new Training(u3, LocalDateTime.of(2026, 2, 20, 16, 0), LocalDateTime.of(2026, 2, 20, 17, 0), ActivityType.RUNNING,      8.0,  8.0)
         );
 
         trainingRepository.saveAll(trainings);

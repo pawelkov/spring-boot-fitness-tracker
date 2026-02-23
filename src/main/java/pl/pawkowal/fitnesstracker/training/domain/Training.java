@@ -13,7 +13,7 @@ public class Training {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
     @Column(nullable = false)
@@ -22,19 +22,19 @@ public class Training {
     @Column(nullable = false)
     private LocalDateTime endTime;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String activityType;
+    private ActivityType activityType;
 
     private double distance;
     private double averageSpeed;
 
-    protected Training() {
-    }
+    protected Training() {}
 
     public Training(User user,
                     LocalDateTime startTime,
                     LocalDateTime endTime,
-                    String activityType,
+                    ActivityType activityType,
                     double distance,
                     double averageSpeed) {
         this.user = user;
@@ -53,47 +53,46 @@ public class Training {
         return user;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public LocalDateTime getStartTime() {
         return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
     }
 
     public LocalDateTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getActivityType() {
+    public ActivityType getActivityType() {
         return activityType;
-    }
-
-    public void setActivityType(String activityType) {
-        this.activityType = activityType;
     }
 
     public double getDistance() {
         return distance;
     }
 
-    public void setDistance(double distance) {
-        this.distance = distance;
-    }
-
     public double getAverageSpeed() {
         return averageSpeed;
     }
 
-    public void setAverageSpeed(double averageSpeed) {
+    public void reschedule(LocalDateTime newStart, LocalDateTime newEnd) {
+        validateTime(newStart, newEnd);
+        this.startTime = newStart;
+        this.endTime = newEnd;
+    }
+
+    public void changeActivityType(ActivityType newType) {
+        this.activityType = newType;
+    }
+
+    public void updateMetrics(double distance, double averageSpeed) {
+        if (distance < 0 || averageSpeed < 0) {
+            throw new IllegalArgumentException("Distance and speed must be >= 0");
+        }
+        this.distance = distance;
         this.averageSpeed = averageSpeed;
+    }
+
+    private void validateTime(LocalDateTime start, LocalDateTime end) {
+        if (start == null || end == null) throw new IllegalArgumentException("start/end required");
+        if (!end.isAfter(start)) throw new IllegalArgumentException("End must be after start");
     }
 }

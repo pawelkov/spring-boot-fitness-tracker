@@ -17,15 +17,4 @@ public class TrainingMapper {
                 t.getAverageSpeed()
         );
     }
-
-    public Training toEntity(TrainingDto dto) {
-        return new Training(
-                null,
-                dto.startTime(),
-                dto.endTime(),
-                dto.activityType(),
-                dto.distance(),
-                dto.averageSpeed()
-        );
-    }
 }

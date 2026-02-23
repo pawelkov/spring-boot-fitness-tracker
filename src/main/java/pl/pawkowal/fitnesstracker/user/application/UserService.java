@@ -18,6 +18,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public User create(User user) {
         if (user.getId() != null) {
             throw new IllegalArgumentException("User already has ID - create is not allowed.");

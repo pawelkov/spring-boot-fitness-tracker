@@ -23,7 +23,7 @@ public class User {
     @Column(name = "birthdate")
     private LocalDate birthdate;
 
-    protected User() { }
+    protected User() {}
 
     public User(String firstName, String lastName, String email, LocalDate birthdate) {
         this.firstName = firstName;

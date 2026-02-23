@@ -2,6 +2,7 @@ package pl.pawkowal.fitnesstracker.training.infrastructure;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import pl.pawkowal.fitnesstracker.training.domain.Training;
+import pl.pawkowal.fitnesstracker.training.domain.ActivityType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,5 +13,7 @@ public interface TrainingRepository extends JpaRepository<Training, Long> {
 
     List<Training> findByEndTimeAfter(LocalDateTime after);
 
-    List<Training> findByActivityType(String activityType);
+    List<Training> findByActivityType(ActivityType activityType);
+
+    List<Training> findByUserIdAndStartTimeBetween(Long userId, LocalDateTime from, LocalDateTime to);
 }

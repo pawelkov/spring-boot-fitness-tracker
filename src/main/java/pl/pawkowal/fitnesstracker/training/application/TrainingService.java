@@ -3,12 +3,12 @@ package pl.pawkowal.fitnesstracker.training.application;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pawkowal.fitnesstracker.training.api.TrainingDto;
-import pl.pawkowal.fitnesstracker.training.api.TrainingMapper;
 import pl.pawkowal.fitnesstracker.training.domain.Training;
 import pl.pawkowal.fitnesstracker.training.infrastructure.TrainingRepository;
 import pl.pawkowal.fitnesstracker.user.application.UserNotFoundException;
 import pl.pawkowal.fitnesstracker.user.domain.User;
 import pl.pawkowal.fitnesstracker.user.infrastructure.UserRepository;
+import pl.pawkowal.fitnesstracker.training.domain.ActivityType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,14 +18,11 @@ public class TrainingService {
 
     private final TrainingRepository trainingRepository;
     private final UserRepository userRepository;
-    private final TrainingMapper mapper;
 
     public TrainingService(TrainingRepository trainingRepository,
-                           UserRepository userRepository,
-                           TrainingMapper mapper) {
+                           UserRepository userRepository) {
         this.trainingRepository = trainingRepository;
         this.userRepository = userRepository;
-        this.mapper = mapper;
     }
 
     @Transactional(readOnly = true)
@@ -45,14 +42,21 @@ public class TrainingService {
         }
 
         Long userId = dto.userId();
-        if (userId == null || !userRepository.existsById(userId)) {
-            throw new UserNotFoundException(userId);
+        if (userId == null) {
+            throw new IllegalArgumentException("User id is required");
         }
 
-        User userRef = userRepository.getReferenceById(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
 
-        Training training = mapper.toEntity(dto);
-        training.setUser(userRef);
+        Training training = new Training(
+                user,
+                dto.startTime(),
+                dto.endTime(),
+                dto.activityType(),
+                dto.distance(),
+                dto.averageSpeed()
+        );
 
         return trainingRepository.save(training);
     }
@@ -61,27 +65,17 @@ public class TrainingService {
     public Training update(Long id, TrainingDto dto) {
         Training existing = getById(id);
 
-        Long userId = dto.userId();
-        if (userId == null || !userRepository.existsById(userId)) {
-            throw new UserNotFoundException(userId);
-        }
-        existing.setUser(userRepository.getReferenceById(userId));
+        existing.reschedule(dto.startTime(), dto.endTime());
+        existing.changeActivityType(dto.activityType());
+        existing.updateMetrics(dto.distance(), dto.averageSpeed());
 
-        existing.setStartTime(dto.startTime());
-        existing.setEndTime(dto.endTime());
-        existing.setActivityType(dto.activityType());
-        existing.setDistance(dto.distance());
-        existing.setAverageSpeed(dto.averageSpeed());
-
-        return trainingRepository.save(existing);
+        return existing;
     }
 
     @Transactional
     public void delete(Long id) {
-        if (!trainingRepository.existsById(id)) {
-            throw new TrainingNotFoundException(id);
-        }
-        trainingRepository.deleteById(id);
+        Training existing = getById(id);
+        trainingRepository.delete(existing);
     }
 
     @Transactional(readOnly = true)
@@ -95,7 +89,12 @@ public class TrainingService {
     }
 
     @Transactional(readOnly = true)
-    public List<Training> byActivityType(String activityType) {
+    public List<Training> byActivityType(ActivityType activityType) {
         return trainingRepository.findByActivityType(activityType);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Training> byUserIdAndStartTimeBetween(Long userId, LocalDateTime from, LocalDateTime to) {
+        return trainingRepository.findByUserIdAndStartTimeBetween(userId, from, to);
     }
 }

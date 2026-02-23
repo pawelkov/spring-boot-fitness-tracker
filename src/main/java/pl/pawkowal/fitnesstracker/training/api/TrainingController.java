@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import pl.pawkowal.fitnesstracker.training.application.TrainingService;
+import pl.pawkowal.fitnesstracker.training.domain.ActivityType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,7 +59,16 @@ public class TrainingController {
     }
 
     @GetMapping("/activity/{activityType}")
-    public List<TrainingDto> byActivityType(@PathVariable String activityType) {
+    public List<TrainingDto> byActivityType(@PathVariable ActivityType activityType) {
         return trainingService.byActivityType(activityType).stream().map(mapper::toDto).toList();
+    }
+
+    @GetMapping("/user/{userId}/from/{from}/to/{to}")
+    public List<TrainingDto> byUserIdAndStartTimeBetween(
+            @PathVariable Long userId,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to
+    ) {
+        return trainingService.byUserIdAndStartTimeBetween(userId, from, to).stream().map(mapper::toDto).toList();
     }
 }
